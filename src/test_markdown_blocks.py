@@ -1,5 +1,5 @@
 import unittest
-from markdown_blocks import markdown_to_blocks    
+from markdown_blocks import markdown_to_blocks, block_to_block_type, BlockType   
 
 class TestMarkdownToBlocksEdgeCases(unittest.TestCase):
 
@@ -97,11 +97,36 @@ This is the same paragraph on a new line
         self.assertEqual(blocks, ["This is a single paragraph with multiple lines\nbut no double newlines.",],
         )   
 
-
     def test_empty_input(self):
         md = ""
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, [])
+
+    def test_block_to_block_types(self):
+        block = "# this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "## this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "### this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "#### this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "##### this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "###### this is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "```\ncode\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        block = "> quote1\n> quote2"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        block = "- list\n- items"
+        self.assertEqual(block_to_block_type(block), BlockType.ULIST)
+        block = "1. list\n2. items"
+        self.assertEqual(block_to_block_type(block), BlockType.OLIST)
+        block = "paragraph"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = " "
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
 
 
     
